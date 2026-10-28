@@ -17,7 +17,7 @@ git push origin main --tags
 ```
 
 গিটহাবে ট্যাগ পুশ করার সাথে সাথে GitHub Actions স্বয়ংক্রিয়ভাবে:
-1. Ubuntu সার্ভারে Node.js 20 এবং Java JDK 17 সেটআপ করবে।
+1. Ubuntu সার্ভারে Node.js 22 (LTS) এবং Java JDK 17 সেটআপ করবে।
 2. Vite দিয়ে ওয়েব বিল্ড (`npm run build`) সম্পন্ন করবে।
 3. Capacitor এর মাধ্যমে অ্যান্ড্রয়েড প্রজেক্ট সিঙ্ক করবে।
 4. `./gradlew assembleDebug` রান করে **`BashaBariVara.apk`** তৈরি করবে।

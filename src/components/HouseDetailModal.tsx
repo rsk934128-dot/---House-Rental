@@ -20,9 +20,13 @@ export const HouseDetailModal: React.FC<HouseDetailModalProps> = ({
   onOpenInquiry,
   onSaveLandlordToContacts
 }) => {
-  if (!listing) return null;
-
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  React.useEffect(() => {
+    setActiveImageIndex(0);
+  }, [listing?.id]);
+
+  if (!listing) return null;
 
   const propertyTypeLabel: Record<string, string> = {
     family: 'পারিবারিক ফ্ল্যাট (Family)',

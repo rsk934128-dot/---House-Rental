@@ -20,8 +20,6 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({
   onClose,
   onSubmitSuccess
 }) => {
-  if (!listing) return null;
-
   const [tenantName, setTenantName] = useState(currentUser?.displayName || '');
   const [tenantPhone, setTenantPhone] = useState(userPhone || '');
   const [tenantEmail, setTenantEmail] = useState(currentUser?.email || '');
@@ -29,12 +27,32 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({
   const [profession, setProfession] = useState('চাকরিজীবী');
   const [proposedMoveInDate, setProposedMoveInDate] = useState('১লা নভেম্বর ২০২৪');
   const [message, setMessage] = useState(
-    `আসসালামু আলাইকুম, আমি আপনার "${listing.title}" বাসাটি ভাড়া নিতে আগ্রহী। অনুগ্রহ করে বাসাটি সরেজমিনে দেখার সময় জানাবেন।`
+    listing
+      ? `আসসালামু আলাইকুম, আমি আপনার "${listing.title}" বাসাটি ভাড়া নিতে আগ্রহী। অনুগ্রহ করে বাসাটি সরেজমিনে দেখার সময় জানাবেন।`
+      : ''
   );
 
   const [sendGmail, setSendGmail] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  React.useEffect(() => {
+    if (listing) {
+      setMessage(`আসসালামু আলাইকুম, আমি আপনার "${listing.title}" বাসাটি ভাড়া নিতে আগ্রহী। অনুগ্রহ করে বাসাটি সরেজমিনে দেখার সময় জানাবেন।`);
+    }
+  }, [listing?.id]);
+
+  React.useEffect(() => {
+    if (currentUser) {
+      if (!tenantName && currentUser.displayName) setTenantName(currentUser.displayName);
+      if (!tenantEmail && currentUser.email) setTenantEmail(currentUser.email);
+    }
+    if (userPhone && !tenantPhone) {
+      setTenantPhone(userPhone);
+    }
+  }, [currentUser, userPhone]);
+
+  if (!listing) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

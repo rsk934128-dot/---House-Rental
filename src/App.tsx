@@ -721,48 +721,54 @@ export default function App() {
       )}
 
       {/* House Detail Modal */}
-      <HouseDetailModal
-        listing={selectedListing}
-        onClose={() => setSelectedListing(null)}
-        onOpenInquiry={(l) => {
-          setSelectedListing(null);
-          setInquiryListing(l);
-        }}
-        onSaveLandlordToContacts={(contact) => {
-          setContactToSave(contact);
-          setIsContactsModalOpen(true);
-        }}
-      />
+      {selectedListing && (
+        <HouseDetailModal
+          listing={selectedListing}
+          onClose={() => setSelectedListing(null)}
+          onOpenInquiry={(l) => {
+            setSelectedListing(null);
+            setInquiryListing(l);
+          }}
+          onSaveLandlordToContacts={(contact) => {
+            setContactToSave(contact);
+            setIsContactsModalOpen(true);
+          }}
+        />
+      )}
 
       {/* Rental Inquiry Modal */}
-      <InquiryModal
-        listing={inquiryListing}
-        currentUser={currentUser}
-        userPhone={userProfile?.phone}
-        onClose={() => setInquiryListing(null)}
-        onSubmitSuccess={handleNewInquiry}
-      />
+      {inquiryListing && (
+        <InquiryModal
+          listing={inquiryListing}
+          currentUser={currentUser}
+          userPhone={userProfile?.phone}
+          onClose={() => setInquiryListing(null)}
+          onSubmitSuccess={handleNewInquiry}
+        />
+      )}
 
       {/* User Profile & Account Control Modal */}
-      <ProfileModal
-        isOpen={isProfileModalOpen}
-        onClose={() => setIsProfileModalOpen(false)}
-        currentUser={currentUser}
-        profile={userProfile}
-        onSaveProfile={handleSaveProfile}
-        userListingsCount={myListings.length}
-        userInquiriesCount={inquiries.length}
-        totalViewsCount={myListings.reduce((sum, item) => sum + (item.viewCount || 0), 0)}
-        onNavigateToMyListings={() => setActiveTab('my-listings')}
-        onNavigateToInquiries={() => setActiveTab('inquiries')}
-        onNavigateToAnalytics={() => setActiveTab('analytics')}
-        onOpenMultiAccount={() => setIsMultiAccountModalOpen(true)}
-        onOpenContacts={() => {
-          setContactToSave(null);
-          setIsContactsModalOpen(true);
-        }}
-        onOpenApkGuide={() => setIsApkGuideModalOpen(true)}
-      />
+      {isProfileModalOpen && (
+        <ProfileModal
+          isOpen={isProfileModalOpen}
+          onClose={() => setIsProfileModalOpen(false)}
+          currentUser={currentUser}
+          profile={userProfile}
+          onSaveProfile={handleSaveProfile}
+          userListingsCount={myListings.length}
+          userInquiriesCount={inquiries.length}
+          totalViewsCount={myListings.reduce((sum, item) => sum + (item.viewCount || 0), 0)}
+          onNavigateToMyListings={() => setActiveTab('my-listings')}
+          onNavigateToInquiries={() => setActiveTab('inquiries')}
+          onNavigateToAnalytics={() => setActiveTab('analytics')}
+          onOpenMultiAccount={() => setIsMultiAccountModalOpen(true)}
+          onOpenContacts={() => {
+            setContactToSave(null);
+            setIsContactsModalOpen(true);
+          }}
+          onOpenApkGuide={() => setIsApkGuideModalOpen(true)}
+        />
+      )}
 
       {/* Multi-Account Google Login & Switcher Modal */}
       <MultiAccountModal

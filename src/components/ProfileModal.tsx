@@ -42,9 +42,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
   onOpenContacts,
   onOpenApkGuide
 }) => {
-  if (!isOpen || !currentUser) return null;
-
-  const [displayName, setDisplayName] = useState(profile?.displayName || currentUser.displayName || '');
+  const [displayName, setDisplayName] = useState(profile?.displayName || currentUser?.displayName || '');
   const [phone, setPhone] = useState(profile?.phone || '');
   const [role, setRole] = useState<'landlord' | 'tenant' | 'both'>(profile?.role || 'both');
   const [nidNumber, setNidNumber] = useState(profile?.nidNumber || '');
@@ -61,7 +59,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
 
   useEffect(() => {
     if (profile) {
-      setDisplayName(profile.displayName || currentUser.displayName || '');
+      setDisplayName(profile.displayName || currentUser?.displayName || '');
       setPhone(profile.phone || '');
       setRole(profile.role || 'both');
       setNidNumber(profile.nidNumber || '');
@@ -71,8 +69,12 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
       setOccupation(profile.occupation || '');
       setBio(profile.bio || '');
       setNotificationEmail(profile.notificationEmail ?? true);
+    } else if (currentUser) {
+      setDisplayName(currentUser.displayName || '');
     }
   }, [profile, currentUser]);
+
+  if (!isOpen || !currentUser) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
