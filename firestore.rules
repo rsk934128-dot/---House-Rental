@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Listings Collection
+    match /listings/{listingId} {
+      // Anyone can read listings to browse available houses
+      allow read: if true;
+
+      // Allow creating listing: either signed in user or anonymous/guest with valid ID
+      allow create: if isValidId(listingId)
+        && request.resource.data.id == listingId
+        && request.resource.data.title is string
+        && request.resource.data.title.size() <= 200
+        && request.resource.data.rentAmount is number
+        && request.resource.data.city is string
+        && request.resource.data.area is string
+        && (!('landlordUid' in request.resource.data) || request.resource.data.landlordUid == null || (isSignedIn() && request.resource.data.landlordUid == request.auth.uid));
+
+      // Allow update: landlord who created, or any user incrementing viewCount
+      allow update: if isValidId(listingId)
+        && request.resource.data.id == listingId
+        && (
+          // Case 1: Landlord updates listing details
+          (!('landlordUid' in resource.data) 
+           || resource.data.landlordUid == null 
+           || (isSignedIn() && resource.data.landlordUid == request.auth.uid))
+          // Case 2: Any visitor incrementing views (viewCount update only)
+          || (
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount', 'viewHistory'])
+          )
+        );
+
+      // Allow delete: creator or admin
+      allow delete: if isValidId(listingId)
+        && (
+          !('landlordUid' in resource.data) 
+          || resource.data.landlordUid == null 
+          || (isSignedIn() && resource.data.landlordUid == request.auth.uid)
+        );
+    }
+
+    // Inquiries Collection
+    match /inquiries/{inquiryId} {
+      // Read inquiry: anyone can read their own or relevant landlord
+      allow read: if true;
+
+      // Allow creating inquiry: valid ID and required fields
+      allow create: if isValidId(inquiryId)
+        && request.resource.data.id == inquiryId
+        && request.resource.data.listingId is string
+        && request.resource.data.tenantName is string
+        && request.resource.data.tenantPhone is string
+        && request.resource.data.message is string
+        && (!('tenantUid' in request.resource.data) || request.resource.data.tenantUid == null || (isSignedIn() && request.resource.data.tenantUid == request.auth.uid));
+
+      // Allow update status
+      allow update: if isValidId(inquiryId)
+        && request.resource.data.id == inquiryId;
+
+      // Allow delete
+      allow delete: if isValidId(inquiryId);
+    }
+
+    // Users Profile Collection
+    match /users/{userId} {
+      // Anyone signed in can read user profile
+      allow read: if isSignedIn();
+
+      // Only the user themselves can create their profile
+      allow create: if isOwner(userId)
+        && isValidId(userId)
+        && request.resource.data.uid == userId
+        && request.resource.data.displayName is string
+        && request.resource.data.email is string;
+
+      // Only the user themselves can update their profile
+      allow update: if isOwner(userId)
+        && isValidId(userId)
+        && request.resource.data.uid == userId;
+
+      // Only the user themselves can delete their profile
+      allow delete: if isOwner(userId);
+    }
+  }
+}

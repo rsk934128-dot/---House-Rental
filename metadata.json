@@ -1,0 +1,7 @@
+{
+  "name": "বাসা বাড়ি ভাড়া - House Rental",
+  "description": "বাড়িওয়ালা ও ভাড়াটিয়াদের জন্য বাড়ি ভাড়া দেওয়া ও নেওয়ার প্ল্যাটফর্ম। ছবি আপলোড, লোকেশন ও যোগাযোগের সম্পূর্ণ সমাধান।",
+  "requestFramePermissions": ["camera", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

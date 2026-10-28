@@ -1,0 +1,108 @@
+{
+  "entities": {
+    "Listing": {
+      "title": "Listing",
+      "description": "A rental house or apartment listing in Bangladesh",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string", "maxLength": 200 },
+        "propertyType": { "type": "string", "enum": ["family", "bachelor", "sublet", "office", "hostel"] },
+        "rentAmount": { "type": "number" },
+        "serviceCharge": { "type": "number" },
+        "advanceDeposit": { "type": "number" },
+        "availableFrom": { "type": "string", "maxLength": 100 },
+        "bedrooms": { "type": "number" },
+        "bathrooms": { "type": "number" },
+        "balconies": { "type": "number" },
+        "floor": { "type": "string", "maxLength": 100 },
+        "totalFloors": { "type": "string", "maxLength": 100 },
+        "sizeSqFt": { "type": "number" },
+        "city": { "type": "string", "maxLength": 100 },
+        "area": { "type": "string", "maxLength": 100 },
+        "fullAddress": { "type": "string", "maxLength": 300 },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "landmark": { "type": "string", "maxLength": 150 },
+        "gasFacility": { "type": "string", "enum": ["cylinder", "line", "none"] },
+        "lift": { "type": "boolean" },
+        "generator": { "type": "boolean" },
+        "parking": { "type": "string", "enum": ["bike", "car", "both", "none"] },
+        "cctv": { "type": "boolean" },
+        "wifi": { "type": "boolean" },
+        "securityGuard": { "type": "boolean" },
+        "images": { "type": "array" },
+        "landlordName": { "type": "string", "maxLength": 100 },
+        "landlordPhone": { "type": "string", "maxLength": 30 },
+        "landlordEmail": { "type": "string", "maxLength": 100 },
+        "contactTime": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "createdAt": { "type": "string" },
+        "isAvailable": { "type": "boolean" },
+        "verified": { "type": "boolean" },
+        "landlordUid": { "type": "string", "maxLength": 128 },
+        "viewCount": { "type": "number" },
+        "viewHistory": { "type": "array" }
+      },
+      "required": ["id", "title", "propertyType", "rentAmount", "bedrooms", "bathrooms", "city", "area", "fullAddress", "landlordName", "landlordPhone", "landlordEmail"]
+    },
+    "Inquiry": {
+      "title": "Inquiry",
+      "description": "Tenant rental inquiry sent to the landlord",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "listingId": { "type": "string" },
+        "listingTitle": { "type": "string", "maxLength": 200 },
+        "tenantName": { "type": "string", "maxLength": 100 },
+        "tenantPhone": { "type": "string", "maxLength": 30 },
+        "tenantEmail": { "type": "string", "maxLength": 100 },
+        "familyMembers": { "type": "number" },
+        "profession": { "type": "string", "maxLength": 100 },
+        "proposedMoveInDate": { "type": "string", "maxLength": 100 },
+        "message": { "type": "string", "maxLength": 2000 },
+        "status": { "type": "string", "enum": ["pending", "contacted", "booked", "rejected"] },
+        "createdAt": { "type": "string" },
+        "sentViaGmail": { "type": "boolean" },
+        "tenantUid": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["id", "listingId", "listingTitle", "tenantName", "tenantPhone", "tenantEmail", "message"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with landlord or tenant identity and contact preferences",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "displayName": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 100 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "role": { "type": "string", "enum": ["landlord", "tenant", "both"] },
+        "nidNumber": { "type": "string", "maxLength": 50 },
+        "whatsappNumber": { "type": "string", "maxLength": 30 },
+        "address": { "type": "string", "maxLength": 300 },
+        "preferredCity": { "type": "string", "maxLength": 100 },
+        "occupation": { "type": "string", "maxLength": 100 },
+        "bio": { "type": "string", "maxLength": 1000 },
+        "notificationEmail": { "type": "boolean" },
+        "verifiedIdentity": { "type": "boolean" },
+        "joinedAt": { "type": "string" }
+      },
+      "required": ["uid", "displayName", "email", "role"]
+    }
+  },
+  "firestore": {
+    "/listings/{listingId}": {
+      "schema": "Listing",
+      "description": "Collection of house and apartment rental listings"
+    },
+    "/inquiries/{inquiryId}": {
+      "schema": "Inquiry",
+      "description": "Collection of rental inquiries and applications"
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile and account settings"
+    }
+  }
+}

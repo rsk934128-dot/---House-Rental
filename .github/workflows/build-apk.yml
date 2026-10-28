@@ -1,0 +1,94 @@
+name: Build & Release Android APK
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_title:
+        description: 'Release Title (e.g. বাসা বাড়ি ভাড়া v1.0.0)'
+        required: false
+        default: 'বাসা বাড়ি ভাড়া Android APK Release'
+      release_notes:
+        description: 'Release Notes (বর্ণনা)'
+        required: false
+        default: 'Android APK build generated automatically from GitHub Actions.'
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Set up Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Dependencies
+        run: npm install --force
+
+      - name: Build Web Application
+        run: npm run build
+
+      - name: Setup Capacitor Android
+        run: |
+          npx cap add android || true
+          npx cap sync android
+
+      - name: Make Gradlew Executable
+        run: chmod +x android/gradlew
+
+      - name: Build Debug APK with Gradle
+        run: |
+          cd android
+          ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Copy & Rename APK
+        run: |
+          mkdir -p release-artifacts
+          cp android/app/build/outputs/apk/debug/app-debug.apk release-artifacts/BashaBariVara.apk
+          echo "APK generated successfully at release-artifacts/BashaBariVara.apk"
+
+      - name: Upload APK as Workflow Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BashaBariVara-Android-APK
+          path: release-artifacts/BashaBariVara.apk
+          retention-days: 30
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.event.inputs.release_title || github.ref_name }}
+          body: |
+            ### 📱 বাসা বাড়ি ভাড়া - Android APK
+            
+            আমাদের **বাসা বাড়ি ভাড়া** অ্যান্ড্রয়েড মোবাইল অ্যাপের নতুন ভার্সন সফলভাবে তৈরি হয়েছে!
+            
+            #### 🚀 কীভাবে মোবাইলে ইনস্টল করবেন:
+            1. নিচে থাকা **`BashaBariVara.apk`** ফাইলে ক্লিক করে ডাউনলোড করুন।
+            2. ফোনের ডাউনলোড ফোল্ডার থেকে ফাইলটি ওপেন করুন।
+            3. ফোন যদি 'Install unknown apps' বা 'Unknown sources' অনুমতি চায়, সেটি এলাও (Allow) করুন।
+            4. **ইনস্টল (Install)** বাটনে ট্যাপ করে সহজে ব্যবহার শুরু করুন!
+            
+            ---
+            *Built automatically via GitHub Actions CI/CD pipeline.*
+          files: release-artifacts/BashaBariVara.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
