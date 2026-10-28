@@ -143,27 +143,36 @@ git push origin main --tags`}
                   গিটহাবে পুশ করার পর আপনার রিপোজিটরির <strong>Actions</strong> ট্যাবে যান:
                 </p>
                 <ul className="list-disc list-inside space-y-1 text-xs text-slate-600 pl-1">
-                  <li>GitHub Actions স্বয়ংক্রিয়ভাবে Node.js 20 ও Java 17 সেটআপ করবে।</li>
+                  <li>GitHub Actions স্বয়ংক্রিয়ভাবে Node.js 22 (LTS) ও Java JDK 21 সেটআপ করবে।</li>
                   <li>Capacitor এর মাধ্যমে Android Gradle প্রজেক্ট সিঙ্ক করবে।</li>
                   <li><code className="bg-slate-100 px-1 py-0.5 rounded font-mono text-slate-800">./gradlew assembleDebug</code> রান করে <strong>BashaBariVara.apk</strong> তৈরি করবে।</li>
-                  <li>সরাসরি <strong>Releases</strong> সেকশনে <code className="bg-slate-100 px-1 py-0.5 rounded font-mono text-slate-800">BashaBariVara.apk</code> ফাইলটি আপলোড হয়ে যাবে!</li>
+                  <li>এটি স্বয়ংক্রিয়ভাবে <strong>Workflow Artifacts</strong> এবং <strong>GitHub Releases</strong> উভয় জায়গায় আপলোড করে দেয়।</li>
                 </ul>
               </div>
 
-              {/* Step 3 */}
-              <div className="border border-slate-200 rounded-2xl p-4 bg-white shadow-xs space-y-2">
+              {/* Step 3: Where to find & download the APK */}
+              <div className="border border-emerald-300 rounded-2xl p-4 bg-emerald-50/50 shadow-xs space-y-2">
                 <div className="flex items-center space-x-2">
-                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center text-xs">৩</span>
-                  <h4 className="font-bold text-slate-900">GitHub Actions থেকে ম্যানুয়ালি রান করার পদ্ধতি</h4>
+                  <span className="w-5 h-5 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center text-xs">৩</span>
+                  <h4 className="font-bold text-slate-900">গিটহাব থেকে সরাসরি APK ডাউনলোড করার নিয়ম:</h4>
                 </div>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  ট্যাগ না দিয়েও যেকোনো সময় GitHub ব্রাউজার থেকে সরাসরি APK বানাতে পারবেন:
-                </p>
-                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
-                  <p>১. আপনার GitHub Repo এর <strong>Actions</strong> ট্যাবে ক্লিক করুন।</p>
-                  <p>২. বামপাশের মেনু থেকে <strong>"Build & Release Android APK"</strong> সিলেক্ট করুন।</p>
-                  <p>৩. ডানপাশে থাকা <strong>"Run workflow"</strong> বাটনে ক্লিক করে ব্রাঞ্চ সিলেক্ট করে রান করুন।</p>
-                  <p>৪. মাত্র ২-৩ মিনিটের মধ্যে আপনার সম্পূর্ণ নতুন APK ডাউনলোড করার জন্য প্রস্তুত হয়ে যাবে!</p>
+                <div className="bg-white p-3.5 rounded-xl border border-emerald-200 text-xs space-y-2 text-slate-700">
+                  <div className="font-bold text-emerald-900 flex items-center space-x-1.5">
+                    <span>📌 উপায় ১: আপনার সফল রান (Actions Artifacts) থেকে ডাউনলোড করুন (তাত্ক্ষণিক)</span>
+                  </div>
+                  <ol className="list-decimal list-inside space-y-1 pl-1 text-slate-600">
+                    <li>GitHub-এর <strong>Actions</strong> ট্যাবে ক্লিক করুন।</li>
+                    <li>যে বিল্ডটিতে সবুজ টিক চিহ্ন (✔️) এসেছে সেটির নামের উপর ক্লিক করুন।</li>
+                    <li>পেজের একেবারে নিচের দিকে স্ক্রোল করুন — সেখানে <strong>"Artifacts"</strong> সেকশন দেখতে পাবেন।</li>
+                    <li>সেখানে থাকা <strong>`BashaBariVara-Android-APK`</strong> ফাইলে ক্লিক করলেই APK ডাউনলোড হয়ে যাবে!</li>
+                  </ol>
+                  
+                  <div className="pt-2 border-t border-slate-100">
+                    <span className="font-bold text-emerald-900 block mb-1">📌 উপায় ২: GitHub Releases পেজ থেকে</span>
+                    <p className="text-slate-600">
+                      আপনার রিপোজিটরির হোমপেজের ডানপাশে থাকা <strong>"Releases"</strong> সেকশনে ক্লিক করুন। সেখানে সরাসরি <strong>BashaBariVara.apk</strong> ডাউনলোড লিংক দেখতে পাবেন।
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

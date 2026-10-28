@@ -92,7 +92,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
           <span className="text-[10px] sm:text-[11px] leading-tight mt-0.5 truncate max-w-full">কন্টাক্টস</span>
         </button>
 
-        {/* Tab 5: Profile / Menu */}
+        {/* Tab 5: Profile / Login */}
         <button
           id="mobile-nav-profile"
           onClick={onOpenProfile}
@@ -106,12 +106,14 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 className="w-6 h-6 rounded-full object-cover ring-1 ring-emerald-500"
               />
             ) : (
-              <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">
+              <div className="w-6 h-6 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-xs font-bold border border-emerald-300">
                 <UserIcon className="w-3.5 h-3.5" />
               </div>
             )}
           </div>
-          <span className="text-[10px] sm:text-[11px] leading-tight mt-0.5 truncate max-w-full">প্রোফাইল</span>
+          <span className={`text-[10px] sm:text-[11px] leading-tight mt-0.5 truncate max-w-full font-medium ${currentUser ? 'text-slate-600' : 'text-emerald-700 font-bold'}`}>
+            {currentUser ? 'প্রোফাইল' : 'লগইন'}
+          </span>
         </button>
 
       </div>

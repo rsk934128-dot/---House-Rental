@@ -189,7 +189,7 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
                   id="sidebar-btn-google-login"
                   onClick={handleSignIn}
                   disabled={isSigningIn}
-                  className="w-full flex items-center justify-center space-x-2 py-2.5 px-3 bg-white hover:bg-slate-50 text-slate-800 rounded-xl font-bold text-xs shadow-xs transition-colors"
+                  className="w-full flex items-center justify-center space-x-2 py-3 px-3 bg-white hover:bg-slate-50 text-slate-800 rounded-xl font-bold text-xs shadow-xs transition-colors active:scale-98"
                 >
                   <svg viewBox="0 0 48 48" className="w-4 h-4 shrink-0">
                     <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
@@ -198,6 +198,16 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({
                     <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
                   </svg>
                   <span>{isSigningIn ? 'লগইন হচ্ছে...' : 'Google দিয়ে সাইন ইন'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenMultiAccount();
+                    onClose();
+                  }}
+                  className="w-full text-center text-[11px] text-emerald-300 hover:text-white pt-0.5 transition-colors underline underline-offset-2"
+                >
+                  অন্যান্য গুগল একাউন্ট যোগ বা সুইচ করুন
                 </button>
               </div>
             )}

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { User } from 'firebase/auth';
 import { UserProfile, HouseRentalListing, RentalInquiry } from '../types';
-import { logout } from '../services/auth';
+import { logout, googleSignIn } from '../services/auth';
 import { 
   User as UserIcon, Shield, Mail, Phone, MapPin, Building, 
   CheckCircle2, AlertCircle, Save, LogOut, FileText, Send, 
   Sparkles, Check, KeyRound, ExternalLink, Calendar, Eye, BarChart2, ArrowRightLeft, Users,
-  Smartphone, Download
+  Smartphone, Download, BellRing
 } from 'lucide-react';
 
 interface ProfileModalProps {
@@ -52,10 +52,37 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
   const [occupation, setOccupation] = useState(profile?.occupation || '');
   const [bio, setBio] = useState(profile?.bio || '');
   const [notificationEmail, setNotificationEmail] = useState(profile?.notificationEmail ?? true);
+  const [dailyEmailSummary, setDailyEmailSummary] = useState(profile?.dailyEmailSummary ?? true);
 
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [activeTab, setActiveTab] = useState<'info' | 'activity' | 'security'>('info');
+
+  // Mobile Auth state
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [mobileAuthNotice, setMobileAuthNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleNotice = (e: any) => {
+      if (e.detail?.message) {
+        setMobileAuthNotice(e.detail.message);
+      }
+    };
+    window.addEventListener('auth-mobile-notice', handleNotice);
+    return () => window.removeEventListener('auth-mobile-notice', handleNotice);
+  }, []);
+
+  const handleMobileSignIn = async () => {
+    try {
+      setIsSigningIn(true);
+      setMobileAuthNotice(null);
+      await googleSignIn();
+    } catch (err: any) {
+      console.warn('Mobile sign-in error:', err);
+    } finally {
+      setIsSigningIn(false);
+    }
+  };
 
   useEffect(() => {
     if (profile) {
@@ -69,12 +96,114 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
       setOccupation(profile.occupation || '');
       setBio(profile.bio || '');
       setNotificationEmail(profile.notificationEmail ?? true);
+      setDailyEmailSummary(profile.dailyEmailSummary ?? true);
     } else if (currentUser) {
       setDisplayName(currentUser.displayName || '');
     }
   }, [profile, currentUser]);
 
-  if (!isOpen || !currentUser) return null;
+  if (!isOpen) return null;
+
+  // Dedicated Mobile Login Screen if unauthenticated
+  if (!currentUser) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-xs overflow-y-auto animate-fadeIn">
+        <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-200 my-auto flex flex-col">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-emerald-800 via-teal-900 to-slate-900 p-6 text-white relative text-center">
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+            >
+              ✕
+            </button>
+
+            <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 mx-auto flex items-center justify-center mb-3 shadow-inner">
+              <Smartphone className="w-7 h-7 text-emerald-300" />
+            </div>
+
+            <h3 className="text-xl font-bold text-white">মোবাইল লগইন</h3>
+            <p className="text-xs text-slate-300 mt-1 max-w-xs mx-auto">
+              গুগল একাউন্ট দিয়ে সহজেই সাইন ইন করে বাড়ি ভাড়ার সমস্ত সুবিধা উপভোগ করুন
+            </p>
+          </div>
+
+          {/* Body */}
+          <div className="p-6 space-y-4">
+            {mobileAuthNotice && (
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-800 flex items-start space-x-2">
+                <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <span>{mobileAuthNotice}</span>
+              </div>
+            )}
+
+            {/* Google Sign In Button */}
+            <button
+              id="btn-mobile-login-modal-signin"
+              onClick={handleMobileSignIn}
+              disabled={isSigningIn}
+              className="w-full flex items-center justify-center space-x-3 py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/30 active:scale-98 transition-all disabled:opacity-50"
+            >
+              <div className="w-5 h-5 bg-white rounded-full p-0.5 flex items-center justify-center shrink-0">
+                <svg viewBox="0 0 48 48" className="w-full h-full">
+                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                </svg>
+              </div>
+              <span>{isSigningIn ? 'লগইন হচ্ছে...' : 'Google দিয়ে সরাসরি সাইন ইন'}</span>
+            </button>
+
+            {onOpenMultiAccount && (
+              <button
+                onClick={() => {
+                  onClose();
+                  onOpenMultiAccount();
+                }}
+                className="w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors"
+              >
+                <ArrowRightLeft className="w-4 h-4 text-emerald-600" />
+                <span>মাল্টি অ্যাকাউন্ট তালিকা ও অ্যাকাউন্ট যোগ</span>
+              </button>
+            )}
+
+            {/* Feature Highlights */}
+            <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 text-xs space-y-2">
+              <span className="font-bold text-slate-800 block">লগইন করলে যেসব সুবিধা পাবেন:</span>
+              <ul className="space-y-1.5 text-slate-600">
+                <li className="flex items-center space-x-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>নিজের বাড়ি ভাড়ার বিজ্ঞাপন ছবিসহ প্রকাশ ও এডিট</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>ভাড়াটিয়াদের পাঠানো বুকিং মেসেজ ও আবেদনপত্র দেখা</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>বিজ্ঞাপনের ভিউ কাউন্ট ও দৈনিক ইমেইল সারসংক্ষেপ</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Google Contacts-এ মোবাইল নম্বর সরাসরি সিঙ্ক ও সেভ</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="text-center pt-1">
+              <button
+                onClick={onClose}
+                className="text-xs text-slate-400 hover:text-slate-600"
+              >
+                পরে লগইন করব, এখন ঘুরে দেখুন
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,6 +223,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
       occupation: occupation.trim() || undefined,
       bio: bio.trim() || undefined,
       notificationEmail,
+      dailyEmailSummary,
       verifiedIdentity: profile?.verifiedIdentity || false,
       joinedAt: profile?.joinedAt || new Date().toISOString().split('T')[0]
     };
@@ -383,20 +513,78 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                 />
               </div>
 
-              {/* Email Notifications Toggle */}
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="pr-4">
-                  <p className="text-xs font-bold text-slate-800">ইমেইল নোটিফিকেশন চালু রাখুন</p>
-                  <p className="text-[11px] text-slate-500">
-                    নতুন আবেদন আসলে বা আপনার আবেদনের স্ট্যাটাস পরিবর্তিত হলে ইমেইল পাবেন।
-                  </p>
+              {/* Notification & Daily Email Summary Section */}
+              <div className="space-y-3 pt-1">
+                <div className="flex items-center space-x-2 pb-1 border-b border-slate-100">
+                  <BellRing className="w-4 h-4 text-emerald-600" />
+                  <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                    ইমেইল নোটিফিকেশন ও ডাইজেস্ট সেটিংস
+                  </span>
                 </div>
-                <input
-                  type="checkbox"
-                  checked={notificationEmail}
-                  onChange={(e) => setNotificationEmail(e.target.checked)}
-                  className="w-5 h-5 text-emerald-600 rounded-md focus:ring-emerald-500"
-                />
+
+                {/* 1. Daily Email Summary of New Inquiries (Requested Feature) */}
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-50/80 via-teal-50/40 to-slate-50 border border-emerald-200 shadow-2xs space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start space-x-3">
+                      <div className="p-2 rounded-xl bg-emerald-100 text-emerald-800 shrink-0 mt-0.5 shadow-2xs">
+                        <Mail className="w-4 h-4" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <h4 className="text-xs sm:text-sm font-bold text-slate-900">
+                            বিজ্ঞাপনের দৈনিক ইমেইল সারসংক্ষেপ (Daily Inquiry Summary)
+                          </h4>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            dailyEmailSummary 
+                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' 
+                              : 'bg-slate-200 text-slate-600'
+                          }`}>
+                            {dailyEmailSummary ? '✓ চালু আছে' : 'বন্ধ'}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          আপনার বিজ্ঞাপনে আসা নতুন সকল ভাড়াটিয়ার আবেদনপত্র (Inquiries), যোগাযোগ নম্বর এবং ভিউ সংখ্যার একটি পূর্ণাঙ্গ দৈনিক সামারি প্রতিদিন আপনার গুগল ইমেইলে ({currentUser.email}) পাঠানো হবে।
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Toggle Switch */}
+                    <label className="relative inline-flex items-center cursor-pointer shrink-0 mt-1">
+                      <input
+                        type="checkbox"
+                        id="toggle-daily-email-summary"
+                        checked={dailyEmailSummary}
+                        onChange={(e) => setDailyEmailSummary(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-slate-300 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                    </label>
+                  </div>
+
+                  {dailyEmailSummary && (
+                    <div className="text-[11px] bg-white/90 p-2.5 rounded-xl border border-emerald-100 text-emerald-900 flex items-center space-x-2 shadow-2xs">
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span>প্রতিদিন সকাল ৯:০০ টায় আপনার বিজ্ঞাপনে আসা নতুন আবেদনপত্রের সারসংক্ষেপ ইনবক্সে পাবেন।</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* 2. Instant Inquiry Alert Toggle */}
+                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <div className="pr-4">
+                    <p className="text-xs font-bold text-slate-800">তাত্ক্ষণিক ইমেইল নোটিফিকেশন</p>
+                    <p className="text-[11px] text-slate-500">
+                      কোনো ভাড়াটিয়া নতুন বুকিং আবেদন পাঠালে সাথে সাথে ইমেইল এলার্ট পাবেন।
+                    </p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    id="toggle-instant-email-notification"
+                    checked={notificationEmail}
+                    onChange={(e) => setNotificationEmail(e.target.checked)}
+                    className="w-5 h-5 text-emerald-600 rounded-md focus:ring-emerald-500 cursor-pointer"
+                  />
+                </div>
               </div>
 
               {/* Submit Button */}

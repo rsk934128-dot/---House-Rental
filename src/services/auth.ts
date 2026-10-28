@@ -146,11 +146,29 @@ export const googleSignIn = async (
 
     if (errorCode === 'auth/popup-blocked') {
       console.warn('Google sign-in popup was blocked by browser. Please allow popups or open in a new tab.');
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('auth-mobile-notice', {
+          detail: {
+            type: 'popup-blocked',
+            message: 'মোবাইল ব্রাউজারে গুগল লগইন পপআপ ব্লক রয়েছে। ব্রাউজার সেটিংসে Pop-ups এলাও (Allow) করুন।'
+          }
+        }));
+      }
       return null;
     }
 
     // For any unexpected network or auth issues, log as warning
     console.warn('Google sign in warning:', errorCode, errorMessage);
+    if (typeof window !== 'undefined' && errorMessage) {
+      window.dispatchEvent(new CustomEvent('auth-mobile-notice', {
+        detail: {
+          type: 'auth-error',
+          message: errorCode === 'auth/network-request-failed' 
+            ? 'ইন্টারনেট সংযোগ চেক করুন এবং পুনরায় চেষ্টা করুন।' 
+            : 'লগইন করতে সমস্যা হচ্ছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।'
+        }
+      }));
+    }
     return null;
   } finally {
     isSigningIn = false;

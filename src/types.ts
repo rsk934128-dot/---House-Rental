@@ -99,6 +99,7 @@ export interface UserProfile {
   occupation?: string;
   bio?: string;
   notificationEmail?: boolean;
+  dailyEmailSummary?: boolean; // Toggle daily email summaries of new inquiries for listings
   verifiedIdentity?: boolean;
   joinedAt: string;
 }

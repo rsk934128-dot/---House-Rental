@@ -210,6 +210,17 @@ export default function App() {
     }, 4000);
   };
 
+  // Listen for mobile auth feedback
+  useEffect(() => {
+    const handleAuthNotice = (e: any) => {
+      if (e.detail?.message) {
+        showToast(e.detail.message);
+      }
+    };
+    window.addEventListener('auth-mobile-notice', handleAuthNotice);
+    return () => window.removeEventListener('auth-mobile-notice', handleAuthNotice);
+  }, []);
+
   // Add new listing handler
   const handleAddNewListing = async (newListing: HouseRentalListing) => {
     setListings(prev => [newListing, ...prev]);

@@ -22,6 +22,8 @@ jobs:
   build:
     name: Build Android APK
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout Code
@@ -71,24 +73,24 @@ jobs:
           path: release-artifacts/BashaBariVara.apk
           retention-days: 30
 
-      - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+      - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ github.event.inputs.release_title || github.ref_name }}
+          tag_name: ${{ (startsWith(github.ref, 'refs/tags/') && github.ref_name) || 'v1.0.0-apk' }}
+          name: ${{ github.event.inputs.release_title || (startsWith(github.ref, 'refs/tags/') && github.ref_name) || 'বাসা বাড়ি ভাড়া Android APK Release' }}
           body: |
-            ### 📱 বাসা বাড়ি ভাড়া - Android APK
+            ### 📱 বাসা বাড়ি ভাড়া - Android Mobile App (APK)
             
-            আমাদের **বাসা বাড়ি ভাড়া** অ্যান্ড্রয়েড মোবাইল অ্যাপের নতুন ভার্সন সফলভাবে তৈরি হয়েছে!
+            আমাদের **বাসা বাড়ি ভাড়া** অ্যান্ড্রয়েড মোবাইল অ্যাপের লেটেস্ট APK ভার্সন সফলভাবে তৈরি হয়েছে!
             
-            #### 🚀 কীভাবে মোবাইলে ইনস্টল করবেন:
+            #### 🚀 ডাউনলোড ও ইনস্টল করার নিয়ম:
             1. নিচে থাকা **`BashaBariVara.apk`** ফাইলে ক্লিক করে ডাউনলোড করুন।
-            2. ফোনের ডাউনলোড ফোল্ডার থেকে ফাইলটি ওপেন করুন।
-            3. ফোন যদি 'Install unknown apps' বা 'Unknown sources' অনুমতি চায়, সেটি এলাও (Allow) করুন।
+            2. ফোনের ডাউনলোড ফোল্ডার থেকে ফাইলটি খুলুন।
+            3. ফোন যদি 'Install unknown apps' অনুমতি চায়, সেটি এলাও (Allow) করুন।
             4. **ইনস্টল (Install)** বাটনে ট্যাপ করে সহজে ব্যবহার শুরু করুন!
             
             ---
-            *Built automatically via GitHub Actions CI/CD pipeline.*
+            *স্বয়ংক্রিয়ভাবে GitHub Actions CI/CD পাইপলাইনের মাধ্যমে তৈরি।*
           files: release-artifacts/BashaBariVara.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
