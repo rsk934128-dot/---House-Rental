@@ -40,7 +40,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
           <div className={`p-1 rounded-xl transition-colors ${activeTab === 'browse' ? 'bg-emerald-100 text-emerald-800' : ''}`}>
             <Home className="w-5 h-5" />
           </div>
-          <span className="text-[11px] leading-tight mt-0.5">বাসা খুঁজুন</span>
+          <span className="text-[10px] sm:text-[11px] leading-tight mt-0.5 truncate max-w-full">বাসা খুঁজুন</span>
         </button>
 
         {/* Tab 2: Post Listing (Prominent Center-like CTA) */}
@@ -56,7 +56,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
           <div className={`p-1 rounded-xl transition-colors ${activeTab === 'post' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-emerald-50 text-emerald-600'}`}>
             <PlusCircle className="w-5 h-5" />
           </div>
-          <span className="text-[11px] leading-tight mt-0.5">বিজ্ঞাপন দিন</span>
+          <span className="text-[10px] sm:text-[11px] leading-tight mt-0.5 truncate max-w-full font-medium">বিজ্ঞাপন</span>
         </button>
 
         {/* Tab 3: Inquiries */}
@@ -77,7 +77,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               </span>
             )}
           </div>
-          <span className="text-[11px] leading-tight mt-0.5">আবেদনপত্র</span>
+          <span className="text-[10px] sm:text-[11px] leading-tight mt-0.5 truncate max-w-full">আবেদন</span>
         </button>
 
         {/* Tab 4: Google Contacts */}
@@ -89,7 +89,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
           <div className="p-1 rounded-xl hover:bg-emerald-50 text-slate-600">
             <Users className="w-5 h-5" />
           </div>
-          <span className="text-[11px] leading-tight mt-0.5">কন্টাক্টস</span>
+          <span className="text-[10px] sm:text-[11px] leading-tight mt-0.5 truncate max-w-full">কন্টাক্টস</span>
         </button>
 
         {/* Tab 5: Profile / Menu */}
@@ -111,7 +111,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               </div>
             )}
           </div>
-          <span className="text-[11px] leading-tight mt-0.5">প্রোফাইল</span>
+          <span className="text-[10px] sm:text-[11px] leading-tight mt-0.5 truncate max-w-full">প্রোফাইল</span>
         </button>
 
       </div>

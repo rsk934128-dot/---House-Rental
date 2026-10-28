@@ -384,7 +384,7 @@ export default function App() {
   }, [listings, currentUser]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col selection:bg-emerald-100 selection:text-emerald-900">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-slate-50 flex flex-col selection:bg-emerald-100 selection:text-emerald-900">
       
       {/* Top Mobile & PWA Install Banner */}
       <MobileInstallBanner onOpenApkGuide={() => setIsApkGuideModalOpen(true)} />
